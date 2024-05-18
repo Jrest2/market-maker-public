@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PriceFeed } from '../interfaces/price-feed.interface';
+import { PriceFeed } from '../../interfaces/price-feed.interface';
 
 @Injectable()
 export class PriceFeedStub implements PriceFeed {
