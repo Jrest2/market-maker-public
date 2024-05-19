@@ -2,15 +2,13 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PriceFeed } from '../interfaces/price-feed.interface';
 import { Hedging } from '../interfaces/hedging.interface';
 import { ConfigService } from '../config/config.service';
+import { RequestService } from './request.service';
 import * as WebSocket from 'ws';
-import { RequestService } from "./request.service";
 
 @Injectable()
 export class InxService {
   private readonly logger = new Logger(InxService.name);
   private ws: WebSocket;
-
-  private OrderBookMap: Map<string, object>;
 
   constructor(
     private priceFeed: PriceFeed,
@@ -29,7 +27,12 @@ export class InxService {
 
     this.ws.on('message', (data: string) => {
       const message = JSON.parse(data);
-      this.handleOrderBookUpdate(message);
+      this.logger.log(
+        new Date().toUTCString(),
+        'New order via WS order book channel: ',
+        message,
+      );
+      return message;
     });
 
     this.ws.on('error', (error) => {
@@ -53,7 +56,11 @@ export class InxService {
 
     this.ws.on('message', (data: string) => {
       const message = JSON.parse(data);
-      this.handleTradeReport(message);
+      this.logger.log(
+        new Date().toUTCString(),
+        'New trade report via WS: ',
+        message,
+      );
     });
 
     this.ws.on('error', (error) => {
@@ -65,14 +72,6 @@ export class InxService {
     });
   }
 
-  handleOrderBookUpdate(message: any) {
-    this.logger.log(`Received order book update: ${JSON.stringify(message)}`);
-  }
-
-  handleTradeReport(message: any) {
-    this.logger.log(`Received trade report update: ${JSON.stringify(message)}`);
-  }
-
   async addOrder(
     marketName: string,
     side: string,
@@ -80,19 +79,22 @@ export class InxService {
     price: number,
     externalOrderId: string,
   ) {
-    const orderDetails = { marketName, amount, side, price, externalOrderId };
-    const result = await this.requestService.placeOrder(orderDetails);
-    const orderId = result.orderId;
-    this.OrderBookMap.set(orderId, {});
+    try {
+      const orderDetails = { marketName, amount, side, price, externalOrderId };
+      const result = await this.requestService.placeOrder(orderDetails);
+      this.logger.log(new Date().toUTCString(), 'Added order result', result);
+      return result;
+    } catch (error) {
+      throw new Error(`Failed to add order: ${error.message}`);
+    }
   }
 
-  cancelOrder(orderId: string) {
-    this.OrderBookMap.delete(orderId);
-  }
-
-  handleOrderExecution(asset: string, amount: number) {
-    this.hedging.executeTrade(asset, amount).then(() => {
-      this.logger.log(`Hedging trade executed for ${amount} of ${asset}`);
-    });
+  async cancelOrder(orderId: string) {
+    try {
+      await this.requestService.cancelOrder(orderId);
+      this.logger.log(new Date().toUTCString(), 'Canceled order ', orderId);
+    } catch (error) {
+      this.logger.error(`Failed to cancel order: ${error.message}`);
+    }
   }
 }
