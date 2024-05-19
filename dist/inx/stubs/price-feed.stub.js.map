@@ -1,0 +1,1 @@
+{"version":3,"file":"price-feed.stub.js","sourceRoot":"","sources":["../../../src/inx/stubs/price-feed.stub.ts"],"names":[],"mappings":";;;;;;;;;AAAA,2CAA4C;AAIrC,IAAM,aAAa,GAAnB,MAAM,aAAa;IAMxB,SAAS;IAET,CAAC;IAQD,KAAK,CAAC,QAAQ,CAAC,KAAa;QAE1B,OAAO,GAAG,CAAC;IACb,CAAC;CACF,CAAA;AApBY,sCAAa;wBAAb,aAAa;IADzB,IAAA,mBAAU,GAAE;GACA,aAAa,CAoBzB"}
