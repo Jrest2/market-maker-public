@@ -16,9 +16,9 @@ jobs:
         with:
           node-version: '14'
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
       - name: Build project
-        run: npm run build
+        run: pnpm run build
       - name: Commit built files
         run: |
           git config --local user.email "action@github.com"
