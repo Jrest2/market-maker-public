@@ -14,9 +14,9 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
-      - name: Install pnpm
-        run: npm i -g pnpm
+          node-version: 'v18.12'
+#      - name: Install pnpm
+#        run: npm i -g pnpm
       - name: Install dependencies
         run: pnpm install
       - name: Build project
