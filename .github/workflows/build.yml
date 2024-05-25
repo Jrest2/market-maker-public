@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Build project
-        run: pnpm run build
+        run: pnpm run build:deploy
       - name: Commit built files
         run: |
           git config --local user.email "action@github.com"
